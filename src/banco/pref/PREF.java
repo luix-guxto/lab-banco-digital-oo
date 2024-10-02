@@ -1,13 +1,13 @@
-package pref;
+package banco.pref;
 
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
-public final class Preferencias {
+public final class PREF {
     public static final String AGENCIA = "0001";
     public static final String CORRENTE = "Conta Corrente";
-    public static final String POUPANCA = "Conta Poupança";
-    public static final String SALARIO = "Conta Salário";
-    public static final String INVESTIMENTO = "Conta de Investimento";
     public static final String DIGITAL = "Conta Digital";
     public static final String INTERNACIONAL = "Conta Internacional";
     public static final String REAL = "BRL";
@@ -19,18 +19,23 @@ public final class Preferencias {
     public static final String JURIDICA = "Pessoa Jurídica";
     public static final double LIMITE_CORRENTE = 1000;
     public static final double TAXA_CORRENTE = 0.05;
-    private static final HashMap<String, Integer> DIGITO = new HashMap<String, Integer>() {{
-        put(Preferencias.CORRENTE, 1);
-        put(Preferencias.POUPANCA, 2);
-        put(Preferencias.INVESTIMENTO, 4);
-        put(Preferencias.SALARIO, 3);
-        put(Preferencias.DIGITAL, 5);
-        put(Preferencias.INTERNACIONAL, 6);
-    }};
+    public static final double LIMITE_DIGITAL = 500;
+    public static final double TAXA_DIGITAL = 0.02;
+    public static final double LIMITE_INTERNACIONAL = 15000;
+    public static final double IOF = 0.06;
+    public static final String[] TIPOS_PIX = {"CPF", "CNPJ", "EMAIL", "COPIA E COLA", "TELEFONE"};
 
+
+    private static final HashMap<String, Integer> DIGITO = new HashMap<String, Integer>() {{
+        put(PREF.CORRENTE, 1);
+        put(PREF.DIGITAL, 2);
+        put(PREF.INTERNACIONAL, 3);
+    }};
     public static String getDigito(String tipo) {
         return String.valueOf(DIGITO.get(tipo));
     }
+
+
 
     public static boolean isCNPJ(String cnpj) {
         // limpa todos os caracteres que não sejam números
@@ -132,5 +137,58 @@ public final class Preferencias {
     public static boolean isSenha(String senha){
         //verifica se a senha tem 4 digitos e é numerica
         return senha.matches("[0-9]{4}");
+    }
+
+    public static double getTaxaInternacional(String moeda) {
+        switch (moeda){
+            case PREF.DOLAR:
+                return 0.1;
+            case PREF.EURO:
+                return 0.2;
+            default:
+                throw new IllegalArgumentException("Moeda não suportada");
+        }
+    }
+
+    public static double getLimiteJuridica(String tipo) {
+        switch (tipo){
+            case PREF.CORRENTE:
+                return 10000;
+            case PREF.DIGITAL:
+                return 5000;
+            case PREF.INTERNACIONAL:
+                return 100000;
+            default:
+                throw new IllegalArgumentException("Tipo de conta não suportado");
+        }
+    }
+
+    public static double getTaxaConversao(String moeda) {
+        switch (moeda){
+            case PREF.DOLAR:
+                return 0.2;
+            case PREF.EURO:
+                return 0.4;
+            case PREF.REAL:
+                return 0.1;
+            default:
+                throw new IllegalArgumentException("Moeda não suportada");
+        }
+
+    }
+
+    public static boolean isSameDay(Calendar data1, Calendar data2){
+        return (data1.get(Calendar.YEAR) == data2.get(Calendar.YEAR) && data1.get(Calendar.MONTH) == data2.get(Calendar.MONTH) && data1.get(Calendar.DAY_OF_MONTH) == data2.get(Calendar.DAY_OF_MONTH));
+    }
+    public static boolean isSameDay(Date data1, Date data2){
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(data1);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(data2);
+        return isSameDay(cal1, cal2);
+    }
+
+    public static boolean isTipoPixValido(String tipo) {
+        return Arrays.asList(PREF.TIPOS_PIX).contains(tipo);
     }
 }

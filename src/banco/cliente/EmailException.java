@@ -1,4 +1,4 @@
-package cliente;
+package banco.cliente;
 
 public class EmailException extends RuntimeException {
   public EmailException() {
